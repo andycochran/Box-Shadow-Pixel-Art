@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html dir="ltr" lang="en-US" class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html dir="ltr" lang="en-US" class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html dir="ltr" lang="en-US" class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html dir="ltr" lang="en-US" class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html dir="ltr" lang="en-US"> <!--<![endif]-->
+
+<html>
+  <head>
+    <title>Box Shadow Pixel Art</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <canvas id="myCanvas" width="300" height="150" style="display:none;">Your browser does not support the HTML5 canvas tag.</canvas>
+    <p>Here's a simple image: <img src="images/mario.png" /></p>
+    <h1>Let's get its colors as array, and turn 'em into box-shadow CSS&hellip;</h1>
+    <div class="colors"><code></code></div>
+    <div class="illustration" style="font-size: 11px;">
+      <div class="the-illustration"></div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+      $( document ).ready(function() {
+
+        var canvas = document.getElementById('myCanvas'),
+        context = canvas.getContext('2d');
+
+        make_base();
+
+        function make_base()
+        {
+          base_image = new Image();
+          base_image.src = $("img").attr('src');
+      		base_image_width = base_image.width;
+      		base_image_height = base_image.height;
+          base_image.onload = function(){
+            context.drawImage(base_image, 0, 0);
+            var imgData = context.getImageData(0, 0, base_image_width, base_image_height).data; // Uint8ClampedArray
+            var newHTML = [];
+            for(i = 0, n = imgData.length, row = -1, col = 0; i < n; i += 4) {
+              red = imgData[i],
+              green = imgData[i + 1],
+              blue = imgData[i + 2],
+              alpha = imgData[i + 3],
+              pixel = i / 4;
+              if ( pixel % base_image_width === 0 ) {
+                row++;
+              }
+              col = pixel - ( row * base_image_width );
+              newHTML.push( col + 'em ' + row + 'em 0 rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + '), ' );
+            }
+            var newHTML = newHTML.join(''),
+            newHTML = newHTML.substring(0, newHTML.length - 2);
+            $('.colors code').html( 'box-shadow: ' + newHTML + ';');
+
+            $('.the-illustration').css( 'boxShadow', newHTML );
+          }
+
+        }
+
+      });
+    </script>
+  </body>
+</html>
